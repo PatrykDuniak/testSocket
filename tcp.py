@@ -1,6 +1,7 @@
 import socket 
 import struct #pack function
-import random 
+import random
+from ipv4 import IPv4
 
 '''
      0                   1                   2                   3
@@ -26,13 +27,15 @@ import random
 
 #https://en.wikipedia.org/wiki/Transmission_Control_Protocol
 
-class TCP():
-    def __init__(self, tcp_src=random.randrange(50000, 60000), tcp_dst=80, tcp_flag=1):
+class TCP(IPv4):
+    def __init__(self, ip_src=socket.gethostbyname_ex(socket.gethostname())[-1][2], ip_dst='127.0.0.1', ip_prot=socket.IPPROTO_TCP, tcp_src=random.randrange(50000, 60000), tcp_dst=80, tcp_flag=1, data=''):
+        super().__init__(ip_src, ip_dst, ip_prot)
         self.tcp_src=tcp_src
         self.tcp_dst=tcp_dst
         self.tcp_flag=tcp_flag
+        self.data=data
     
-    def frame(self):
+    def TCPframe(self):
         TCP_SRC=self.tcp_src                #Source port
 
         TCP_DST=self.tcp_dst                #Destination port
@@ -62,9 +65,9 @@ class TCP():
 
         TCP_WIN=socket.htons (5840)	        #Window size - maximum allowed window size                           
 
-        TCP_CHECK=0                            #Checksum
+        TCP_CHECK=0                         #Checksum
 
-        TCP_URG=0                            #Urgent pointer
+        TCP_URG=0                           #Urgent pointer
 
         TCP_OPT=0                           #Options
 
@@ -77,5 +80,3 @@ class TCP():
 
         return TCP_HEADER
 
-xd = TCP()
-print(xd.frame())
