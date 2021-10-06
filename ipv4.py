@@ -18,7 +18,7 @@ import struct #pack function
    |                    Options                    |   Padding   |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 '''
-
+#http://www.daemon.org/ip.html
 #https://en.wikipedia.org/wiki/IPv4
 
 class IPv4():
@@ -52,7 +52,7 @@ class IPv4():
                                                    #This 16-bit field defines the entire packet size in bytes, including header and data.
                                                    #The minimum size is 20 bytes (header without data) and the maximum is 65,535 bytes.
 
-      IP_ID=54321                                  #This field is an identification field and is primarily used for uniquely identifying the group of fragments of a single IP datagram. 
+      IP_ID=0                                      #This field is an identification field and is primarily used for uniquely identifying the group of fragments of a single IP datagram. 
 
       IP_FLAG=0                                    #A three-bit field follows and is used to control or identify fragments
 
@@ -83,7 +83,6 @@ class IPv4():
 
       temp=self.ipchecksumcalc(IP_HEADER)
 
-
       IP_HEADER=struct.pack('!BBHHHBBH4s4s', IP_VER_IHL, IP_DSCP_ECN, IP_TLEN, IP_ID, IP_FLAG_FOFF, IP_TTL, IP_PROT, temp, IP_SRC, IP_DST)
 
       return IP_HEADER
@@ -104,8 +103,4 @@ class IPv4():
 
       
       
-         
-
-
-xd = IPv4()
-print(xd.IPframe())
+      

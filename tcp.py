@@ -24,11 +24,11 @@ from ipv4 import IPv4
    |                             data                            |
    +-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+-+
 '''
-
+#http://www.daemon.org/tcp.html
 #https://en.wikipedia.org/wiki/Transmission_Control_Protocol
 
 class TCP(IPv4):
-    def __init__(self, ip_src=socket.gethostbyname_ex(socket.gethostname())[-1][2], ip_dst='127.0.0.1', ip_prot=socket.IPPROTO_TCP, tcp_src=random.randrange(50000, 60000), tcp_dst=80, tcp_flag=1, data=''):
+    def __init__(self, ip_src=socket.gethostbyname_ex(socket.gethostname())[-1][0], ip_dst='127.0.0.1', ip_prot=socket.IPPROTO_TCP, tcp_src=random.randrange(50000, 60000), tcp_dst=80, tcp_flag=1, data=''):
         super().__init__(ip_src, ip_dst, ip_prot)
         self.tcp_src=tcp_src
         self.tcp_dst=tcp_dst
@@ -73,12 +73,44 @@ class TCP(IPv4):
 
         TCP_OPT=0                           #Options
 
+        TCP_DATA=self.data                  #Data
+
         TCP_PAD=0                           #Padding
 
-        TCP_DATA=0                          #Data
+        
+        
+
 
         #https://docs.python.org/3/library/struct.html
         TCP_HEADER=struct.pack('!HHLLBBHHH', TCP_SRC, TCP_DST, TCP_SEQ, TCP_ACK, TCP_DOFF_RES, TCP_FLAG, TCP_WIN, TCP_CHECK, TCP_URG)
+        
+        IP_HEADER=IPv4.IPframe(self, total_length = TCP_DOFF*4 + len(TCP_DATA))
 
-        return TCP_HEADER
+        temp = self.tcpchecksumcalc(TCP_HEADER, total_length = TCP_DOFF*4 + len(TCP_DATA))
 
+        TCP_HEADER=struct.pack('!HHLLBBHHH', TCP_SRC, TCP_DST, TCP_SEQ, TCP_ACK, TCP_DOFF_RES, TCP_FLAG, TCP_WIN, temp, TCP_URG)
+
+        return [IP_HEADER, TCP_HEADER]
+
+    def tcpchecksumcalc(self, TCP_HEADER, total_length):
+        output = []
+        sum = struct.pack('!4s4sBBH', socket.inet_aton(self.ip_src), socket.inet_aton(self.ip_dst), 0, self.ip_prot, total_length)
+
+        for x in range(0, len(sum), 2):
+            output.append((sum[x]<<8)+sum[x+1])
+
+        sum = TCP_HEADER
+
+        for x in range(0, len(sum), 2):
+            output.append((sum[x]<<8)+sum[x+1])
+
+        for x in range(1, len(output)):
+         output[0]+=output[x]
+         if output[0] >= 65536:                 #calculating sum of every 'words'
+            output[0] -= 65535
+
+        return 65535-output[0] #16bit compliment of it
+       
+
+xd = TCP()
+print(xd.TCPframe())
