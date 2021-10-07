@@ -86,7 +86,8 @@ class TCP(IPv4):
 
         TCP_HEADER=struct.pack('!HHLLBBHHH', TCP_SRC, TCP_DST, TCP_SEQ, TCP_ACK, TCP_DOFF_RES, TCP_FLAG, TCP_WIN, temp, TCP_URG)
 
-        return [IP_HEADER, TCP_HEADER]
+
+        return IP_HEADER+TCP_HEADER
         
 
     def tcpchecksumcalc(self, TCP_HEADER, total_length):
@@ -107,4 +108,8 @@ class TCP(IPv4):
             output[0] -= 65535
 
         return 65535-output[0] #16bit compliment of it
-       
+
+    def tcpdecode(self, packet):
+        temp = b''
+        packet = struct.unpack('!BBHHHBBH4s4sHHLLBBHHH', temp)
+        return temp

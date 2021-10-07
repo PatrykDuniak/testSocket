@@ -48,7 +48,7 @@ class IPv4():
                                                    #ECN is an optional feature available when both endpoints support it and effective when also supported by the underlying network.
       IP_DSCP_ECN=(IP_DSCP << 6) + IP_ECN
 
-      IP_TLEN=total_length                                   #Total Length - kernel probably calculate this correctly on his own
+      IP_TLEN=IP_IHL*4+total_length                                   #Total Length - kernel probably calculate this correctly on his own
                                                    #This 16-bit field defines the entire packet size in bytes, including header and data.
                                                    #The minimum size is 20 bytes (header without data) and the maximum is 65,535 bytes.
 
